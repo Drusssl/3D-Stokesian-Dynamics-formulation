@@ -1,0 +1,4 @@
+cmake>=3.16
+eigen>=3.4
+python>=3.9
+matplotlib
