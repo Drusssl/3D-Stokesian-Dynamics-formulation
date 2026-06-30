@@ -8,6 +8,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 find_package(Eigen3 REQUIRED NO_MODULE)
 
 add_library(surge_sd3d
+  src/brady1984_monolayer.cpp
   src/coefficients.cpp
   src/ewald.cpp
   src/near_field.cpp
@@ -33,3 +34,6 @@ target_link_libraries(two_sphere_trajectory PRIVATE surge_sd3d)
 
 add_executable(smoke_checks examples/smoke_checks.cpp)
 target_link_libraries(smoke_checks PRIVATE surge_sd3d)
+
+add_executable(brady1984_monolayer examples/brady1984_monolayer.cpp)
+target_link_libraries(brady1984_monolayer PRIVATE surge_sd3d)

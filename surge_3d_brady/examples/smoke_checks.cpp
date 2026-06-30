@@ -2,6 +2,7 @@
 #include <iostream>
 #include <stdexcept>
 
+#include "surge/brady1984/monolayer.hpp"
 #include "surge/sd3d/projection.hpp"
 #include "surge/sd3d/time_integrator.hpp"
 
@@ -90,6 +91,18 @@ int main() {
   require(frames.size() == 5, "RK4 frame count mismatch");
   for (const auto& frame : frames) {
     for (const Vec3& x : frame.positions) require(x.array().isFinite().all(), "trajectory contains non-finite position");
+  }
+
+  surge::brady1984::RunConfig brady = surge::brady1984::presetRun('A');
+  brady.steps = 2;
+  brady.warmupSteps = 0;
+  surge::brady1984::MonolayerState monolayer = surge::brady1984::makeInitialState(brady);
+  const surge::brady1984::BradyStepResult bradySolved =
+      surge::brady1984::solveProjectedVelocities(monolayer, 0.0, brady);
+  require(finiteVector(bradySolved.qdot), "Brady monolayer velocity contains non-finite values");
+  surge::brady1984::rk4Step(monolayer, 0.0, brady);
+  for (const auto& p : monolayer.particles) {
+    require(std::isfinite(p.x) && std::isfinite(p.y), "Brady monolayer step contains non-finite position");
   }
 
   std::cout << "smoke checks passed\n";
